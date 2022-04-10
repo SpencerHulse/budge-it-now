@@ -12,18 +12,18 @@ const FILES_TO_CACHE = [
 self.addEventListener("install", function (e) {
   e.waitUntil(
     // Add files to the cache
-    caches.open(CACHE_NAME).then(function (cache) {
+    caches.open(CACHE_NAME).then((cache) => {
       console.log(`Installing cache : ${CACHE_NAME}`);
       return cache.addAll(FILES_TO_CACHE);
     })
   );
 });
 
-// Clear the cache
+// Clear outdated caches
 self.addEventListener("activate", function (e) {
   e.waitUntil(
     // Gets the keys in cache and filters it for this apps keys
-    caches.keys().then(function (keyList) {
+    caches.keys().then((keyList) => {
       let cacheKeepList = keyList.filter(function (key) {
         return key.indexOf(APP_PREFIX);
       });
@@ -46,19 +46,32 @@ self.addEventListener("activate", function (e) {
 
 // Retrieves information from the cache
 self.addEventListener("fetch", function (e) {
-  console.log(`Fetch request : ${e.request.url}`);
+  // console.log(`Fetch request : ${e.request.url}`);
   e.respondWith(
-    // Checks for a match with the request
-    caches.match(e.request).then(function (request) {
-      // Returns the request if already cached or fetches it if not
-      if (request) {
-        console.log(`responding with cache : ${e.request.url}`);
-        return request;
-      } else {
-        console.log(`file is not cached, fetching : ${e.request.url}`);
-        return fetch(e.request);
-      }
-      // return request || fetch(e.request);
-    })
+    caches
+      .match(e.request)
+      .then(function (response) {
+        if (response) {
+          return response;
+        } else {
+          return fetch(e.request).then(function (response) {
+            caches.open(CACHE_NAME).then(function (cache) {
+              cache.put(e.request, response);
+            });
+            return response.clone();
+          });
+        }
+      })
+      .catch(function (err) {
+        console.log(err);
+      })
   );
+  /*   e.respondWith(
+    // Checks for a match with the request
+    caches.match(e.request).then((request) => {
+      // console.log(request);
+      // Returns the request if already cached or fetches it if not
+      return request || fetch(e.request);
+    })
+  ); */
 });
