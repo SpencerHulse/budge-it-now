@@ -58,8 +58,11 @@
     <script src="js/index.js"></script>
     <script src="js/idb.js"></script>
     <script>
+      // Closed function
       (function () {
+        // Ensures navigator has a service worker key
         if ("serviceWorker" in navigator) {
+          // Registers the service worker
           navigator.serviceWorker
             .register("./service-worker.js")
             .then(() => console.log("Service Worker registered successfully."))
