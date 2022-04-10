@@ -33,6 +33,8 @@ function saveRecord(record) {
   const transactionObjectStore = transaction.objectStore("new_transaction");
   // Add record to the store
   transactionObjectStore.add(record);
+  // Dev alert
+  alert("Transaction submitted successfully!");
 }
 
 // Function to handle uploading stored transactions
