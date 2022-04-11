@@ -47,8 +47,17 @@ self.addEventListener("activate", function (event) {
 });
 
 self.addEventListener("fetch", function (event) {
+  event.respondWith(
+    caches.match(event.request).then(function (request) {
+      if (request) {
+        return request;
+      } else {
+        return fetch(event.request);
+      }
+    })
+  );
   // Prevent images/font files from being stored. Also blocks "POST" requests.
-  if (
+  /*   if (
     event.request.method === "POST" ||
     event.request.destination === "font" ||
     event.request.url.includes("/icons/")
@@ -84,7 +93,7 @@ self.addEventListener("fetch", function (event) {
         });
       }
     })
-  );
+  ); */
 });
 
 // Pseudo code given by learning helper
@@ -99,8 +108,3 @@ if the code reaches the catch block it means you are offline and it will serve f
 
 // Code given by module/video in module but doesn't actually work offline
 // console.log("fetch request : " + e.request.url);
-/*   event.respondWith(
-    caches.match(event.request).then(function (request) {
-      return request || fetch(event.request);
-    })
-  ); */
