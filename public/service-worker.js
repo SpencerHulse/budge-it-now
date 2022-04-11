@@ -47,13 +47,14 @@ self.addEventListener("activate", function (event) {
 });
 
 self.addEventListener("fetch", function (event) {
-  // Code given by module/video in module but doesn't actually work offline
-  // console.log("fetch request : " + e.request.url);
-  /*   event.respondWith(
-    caches.match(event.request).then(function (request) {
-      return request || fetch(event.request);
-    })
-  ); */
+  // Prevent images/font files from being stored. Also blocks "POST" requests.
+  if (
+    event.request.method === "POST" ||
+    event.request.destination === "font" ||
+    event.request.url.includes("/icons/")
+  ) {
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(function (cached) {
@@ -64,7 +65,6 @@ self.addEventListener("fetch", function (event) {
 
       function fetchedFromNetwork(response) {
         let cacheCopy = response.clone();
-
         caches
           .open(CACHE_NAME)
           .then(function add(cache) {
@@ -88,10 +88,19 @@ self.addEventListener("fetch", function (event) {
 });
 
 // Pseudo code given by learning helper
-// set a variable for data cache name --- Don't understand this
-// check to see if event.url includes "/api/" --- Done
+// set a variable for data cache name
+// check to see if event.url includes "/api/"
 // if it does open then use the data cache name variable to open the cache
 // return fetch event.request
 // if fetch.status is 200/successful
 // update the cache using .clone() method
-// .catch return cache.match (event.request) ------ if the code reaches the catch block it means you are offline and it will serve files from cache
+/* .catch return cache.match (event.request) - 
+if the code reaches the catch block it means you are offline and it will serve files from cache */
+
+// Code given by module/video in module but doesn't actually work offline
+// console.log("fetch request : " + e.request.url);
+/*   event.respondWith(
+    caches.match(event.request).then(function (request) {
+      return request || fetch(event.request);
+    })
+  ); */
