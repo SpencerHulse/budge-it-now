@@ -2,10 +2,10 @@ const APP_PREFIX = "BudgeItNow-";
 const VERSION = "version_01";
 const CACHE_NAME = APP_PREFIX + VERSION;
 const FILES_TO_CACHE = [
-  "./index.html",
-  "./css/styles.css",
-  "./js/index.js",
-  "./js/idb.js",
+  "/index.html",
+  "/css/styles.css",
+  "/js/index.js",
+  "/js/idb.js",
 ];
 
 // Cache resources by self referring to the service worker object
@@ -46,32 +46,13 @@ self.addEventListener("activate", function (e) {
 
 // Retrieves information from the cache
 self.addEventListener("fetch", function (e) {
-  // console.log(`Fetch request : ${e.request.url}`);
+  console.log(`Fetch request : ${e.request.url}`);
   e.respondWith(
-    caches
-      .match(e.request)
-      .then(function (response) {
-        if (response) {
-          return response;
-        } else {
-          return fetch(e.request).then(function (response) {
-            caches.open(CACHE_NAME).then(function (cache) {
-              cache.put(e.request, response);
-            });
-            return response.clone();
-          });
-        }
-      })
-      .catch(function (err) {
-        console.log(err);
-      })
-  );
-  /*   e.respondWith(
     // Checks for a match with the request
     caches.match(e.request).then((request) => {
       // console.log(request);
       // Returns the request if already cached or fetches it if not
       return request || fetch(e.request);
     })
-  ); */
+  );
 });
