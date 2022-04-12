@@ -2,7 +2,6 @@ const APP_PREFIX = "BudgeItNow-";
 const VERSION = "version_01";
 const CACHE_NAME = APP_PREFIX + VERSION;
 const FILES_TO_CACHE = [
-  "/",
   "/index.html",
   "/css/styles.css",
   "/js/index.js",
@@ -10,7 +9,7 @@ const FILES_TO_CACHE = [
 ];
 
 self.addEventListener("install", function (event) {
-  e.waitUntil(
+  event.waitUntil(
     // Add files to the cache
     caches.open(CACHE_NAME).then((cache) => {
       console.log(`Installing cache : ${CACHE_NAME}`);
