@@ -10,15 +10,12 @@ const FILES_TO_CACHE = [
 ];
 
 self.addEventListener("install", function (event) {
-  console.log(`WORKER: install event in progress.`);
-  event.waitUntil(
+  e.waitUntil(
     // Add files to the cache
-    caches
-      .open(CACHE_NAME)
-      .then(function (cache) {
-        return cache.addAll(FILES_TO_CACHE);
-      })
-      .then(() => console.log(`WORKER: install complete.`))
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log(`Installing cache : ${CACHE_NAME}`);
+      return cache.addAll(FILES_TO_CACHE);
+    })
   );
 });
 
@@ -46,7 +43,7 @@ self.addEventListener("activate", function (event) {
   );
 });
 
-self.addEventListener("fetch", function (event) {
+self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then(function (request) {
       if (request) {
@@ -56,55 +53,4 @@ self.addEventListener("fetch", function (event) {
       }
     })
   );
-  // Prevent images/font files from being stored. Also blocks "POST" requests.
-  /*   if (
-    event.request.method === "POST" ||
-    event.request.destination === "font" ||
-    event.request.url.includes("/icons/")
-  ) {
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      let networked = fetch(event.request)
-        .then(fetchedFromNetwork, unableToResolve)
-        .catch(unableToResolve);
-      return cached || networked;
-
-      function fetchedFromNetwork(response) {
-        let cacheCopy = response.clone();
-        caches
-          .open(CACHE_NAME)
-          .then(function add(cache) {
-            cache.put(event.request, cacheCopy);
-          })
-          .then(function () {
-            console.log(`Fetch response stored in cache`);
-          });
-        return response;
-      }
-
-      function unableToResolve() {
-        return new Response(`<h1>Service Unavailable</h1>`, {
-          status: 503,
-          statusText: "Service Unavailable",
-          headers: new Headers({ "content-Type": "text/plain" }),
-        });
-      }
-    })
-  ); */
 });
-
-// Pseudo code given by learning helper
-// set a variable for data cache name
-// check to see if event.url includes "/api/"
-// if it does open then use the data cache name variable to open the cache
-// return fetch event.request
-// if fetch.status is 200/successful
-// update the cache using .clone() method
-/* .catch return cache.match (event.request) - 
-if the code reaches the catch block it means you are offline and it will serve files from cache */
-
-// Code given by module/video in module but doesn't actually work offline
-// console.log("fetch request : " + e.request.url);
